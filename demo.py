@@ -77,13 +77,28 @@ if __name__ == '__main__':
         
     global_pose, mano_pose, mano_shape, mano_trans = optimize_pose(hand_model, mano_layer, obj_verts, contacts_object, partition_object, uv_object,
                                                                    w_contact=args.w_contact, w_pene=args.w_pene, w_uv=args.w_uv) 
-    hand_verts, hand_frames = mano_layer(torch.cat((global_pose, mano_pose), dim=1), th_betas=mano_shape, th_trans=mano_trans)
-    hand_verts = hand_verts.detach()
-    hand_verts = hand_verts.cpu().numpy()
+    hand_verts, hand_frames = mano_layer(
+        torch.cat((global_pose, mano_pose), dim=1), th_betas=mano_shape, th_trans=mano_trans)
+    hand_verts = hand_verts.detach().cpu().numpy()
+    hand_frames = hand_frames.detach()
     
+    obj_mesh_path = os.path.join(args.save_root, args.obj_path.split('/')[-1])
     for i in range(len(hand_verts)):
-        obj_mesh.export(os.path.join(args.save_root, args.obj_path.split('/')[-1]))
+        obj_mesh.export(obj_mesh_path)
         hand_mesh = trimesh.Trimesh(vertices=hand_verts[i], faces=hand_face)
         hand_mesh.export(os.path.join(args.save_root, 'grasp_{}.obj'.format(i)))
- 
+        np.savez(
+            os.path.join(args.save_root, f'grasp_{i}.npz'),
+            obj_verts=obj_verts[i].detach().cpu().numpy(),
+            obj_vn=obj_vn[i].detach().cpu().numpy(),
+            contacts_object=contacts_object[i].detach().cpu().numpy(),
+            partition_object=partition_object[i].detach().cpu().numpy(),
+            uv_object=uv_object[i].detach().cpu().numpy(),
+            hand_verts=hand_verts[i],
+            hand_frames=hand_frames[i].detach().cpu().numpy(),
+            hand_faces=np.asarray(hand_face),
+            obj_mesh_verts=np.asarray(obj_mesh.vertices),
+            obj_mesh_faces=np.asarray(obj_mesh.faces),
+        )
+
     print("all done")

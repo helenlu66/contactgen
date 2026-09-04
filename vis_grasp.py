@@ -10,7 +10,7 @@ colors = {'light_red': [0.85882353, 0.74117647, 0.65098039],
 def ho_plot(hand_mesh, obj_mesh, save_path, viewpoint_path="assets/viewpoint.json"):
     vis = open3d.visualization.Visualizer()
     vis.create_window()
-    
+
     vis_hand = open3d.geometry.TriangleMesh()
     vis_hand.vertices = open3d.utility.Vector3dVector(hand_mesh.vertices)
     vis_hand.triangles = open3d.utility.Vector3iVector(hand_mesh.faces)
@@ -20,7 +20,7 @@ def ho_plot(hand_mesh, obj_mesh, save_path, viewpoint_path="assets/viewpoint.jso
     vis_obj = open3d.geometry.TriangleMesh()
     vis_obj.vertices = open3d.utility.Vector3dVector(obj_mesh.vertices)
     vis_obj.triangles = open3d.utility.Vector3iVector(obj_mesh.faces)
-    vis_obj.paint_uniform_color(colors['light_blue'])        
+    vis_obj.paint_uniform_color(colors['light_blue'])
     vis_obj.compute_vertex_normals()
     vis.add_geometry(vis_obj)
     ctr = vis.get_view_control()
@@ -30,7 +30,7 @@ def ho_plot(hand_mesh, obj_mesh, save_path, viewpoint_path="assets/viewpoint.jso
     vis.update_renderer()
     vis.capture_screen_image(save_path)
     vis.destroy_window()
-        
+
 
 if __name__ == '__main__':
     parse = argparse.ArgumentParser("Visualize grasp")
